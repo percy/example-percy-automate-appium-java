@@ -34,6 +34,7 @@ class PercyAfterTest {
         browserstackOptions.put("osVersion", "10");
         browserstackOptions.put("deviceName", "Samsung Galaxy S20");
         browserstackOptions.put("local", "false");
+        browserstackOptions.put("realMobile", true);
         browserstackOptions.put("projectName", "My first Percy on Automate Project");
         browserstackOptions.put("buildName", "java Android");
         browserstackOptions.put("sessionName", "first_visual_test");
