@@ -31,13 +31,13 @@ class PercyTest {
     public void setUp() throws Exception {
         MutableCapabilities capabilities = new MutableCapabilities();
         HashMap<String, Object> browserstackOptions = new HashMap<String, Object>();
-        browserstackOptions.put("osVersion", "10");
-        browserstackOptions.put("deviceName", "Samsung Galaxy S20");
+        browserstackOptions.put("osVersion", "14");
+        browserstackOptions.put("deviceName", "iPhone 12");
         browserstackOptions.put("local", "false");
         browserstackOptions.put("realMobile", true);
-        browserstackOptions.put("projectName", "My first Percy on Automate Project");
-        browserstackOptions.put("buildName", "java Android");
-        browserstackOptions.put("sessionName", "first_visual_test");
+        browserstackOptions.put("projectName", "Percy");
+        browserstackOptions.put("buildName", "Appium-SDKs");
+        browserstackOptions.put("sessionName", "ios12-java");
         
         capabilities.setCapability("bstack:options", browserstackOptions);
 
