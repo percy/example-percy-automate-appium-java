@@ -31,8 +31,9 @@ class PercyTest {
     public void setUp() throws Exception {
         MutableCapabilities capabilities = new MutableCapabilities();
         HashMap<String, Object> browserstackOptions = new HashMap<String, Object>();
-        browserstackOptions.put("osVersion", "14");
+        browserstackOptions.put("osVersion", "17");
         browserstackOptions.put("deviceName", "iPhone 12");
+        browserstackOptions.put("appiumVersion", System.getenv().getOrDefault("APPIUM_VERSION", "2.19.0"));
         browserstackOptions.put("local", "false");
         browserstackOptions.put("realMobile", true);
         browserstackOptions.put("projectName", "Percy");
