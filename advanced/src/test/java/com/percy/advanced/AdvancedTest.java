@@ -1,8 +1,16 @@
 package com.percy.advanced;
 
 // PER-8195 Phase 3 — automate-appium-java advanced example.
+//
+// Percy on Automate with Appium captures a mobile *browser* session (Chrome on a real
+// Android device), the same flow as src/test/java/com/percy/PercyTest.java. Native apps
+// belong to App Percy (example-percy-appium-java): the CLI's Automate capture runs
+// JavaScript to read the screen size and regions, which a native app session cannot do.
+//
+// PercyOnAutomate logs and swallows capture errors, so `make test` fails the run when
+// the Percy log reports one (see Makefile).
 
-import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.percy.appium.PercyOnAutomate;
 import org.openqa.selenium.MutableCapabilities;
 import org.testng.annotations.AfterClass;
@@ -15,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AdvancedTest {
-    private AppiumDriver driver;
+    private static final String HEADER_XPATH = "//h1";
+
+    private AndroidDriver driver;
     private PercyOnAutomate percy;
 
     @BeforeClass
@@ -26,14 +36,17 @@ public class AdvancedTest {
         Map<String, Object> bstackOptions = new HashMap<>();
         bstackOptions.put("osVersion", System.getenv().getOrDefault("OS_VERSION", "12.0"));
         bstackOptions.put("deviceName", System.getenv().getOrDefault("DEVICE", "Samsung Galaxy S22 Ultra"));
+        bstackOptions.put("appiumVersion", System.getenv().getOrDefault("APPIUM_VERSION", "2.19.0"));
         bstackOptions.put("projectName", System.getenv().getOrDefault("PERCY_PROJECT", "Percy Automate Appium-Java Advanced"));
         bstackOptions.put("buildName", System.getenv().getOrDefault("PERCY_BUILD", "Advanced Automate Appium Java"));
         bstackOptions.put("sessionName", "advanced_visual_test");
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("browserName", "chrome");
         caps.setCapability("bstack:options", bstackOptions);
-        caps.setCapability("app", System.getenv("APP"));
-        driver = new AppiumDriver(
+        driver = new AndroidDriver(
             new URL("https://" + user + ":" + key + "@hub-cloud.browserstack.com/wd/hub"),
             caps);
+        driver.get(System.getenv().getOrDefault("URL", "https://en.wikipedia.org/wiki/BrowserStack"));
         percy = new PercyOnAutomate(driver);
         Thread.sleep(5000);
     }
@@ -45,32 +58,28 @@ public class AdvancedTest {
 
     @Test
     public void exercisesBaseline() {
-        percy.screenshot("Wikipedia Home");
+        percy.screenshot("Wikipedia Article");
     }
 
     @Test
-    public void exercisesDeviceNameAndOrientation() {
+    public void exercisesFullPage() {
         Map<String, Object> opts = new HashMap<>();
-        opts.put("device_name", System.getenv().getOrDefault("DEVICE", "Samsung Galaxy S22 Ultra"));
-        opts.put("orientation", "landscape");
-        percy.screenshot("Wikipedia Home — landscape", opts);
-    }
-
-    @Test
-    public void exercisesFullscreenAndBars() {
-        Map<String, Object> opts = new HashMap<>();
-        opts.put("fullscreen", true);
-        opts.put("status_bar_height", 24);
-        opts.put("nav_bar_height", 0);
-        percy.screenshot("Wikipedia Home — fullscreen", opts);
+        opts.put("full_page", true);
+        percy.screenshot("Wikipedia Article — full page", opts);
     }
 
     @Test
     public void exercisesIgnoreRegionsViaXpath() {
         Map<String, Object> opts = new HashMap<>();
-        opts.put("ignore_regions_xpaths",
-            Arrays.asList("//android.widget.TextView[@text=\"Search Wikipedia\"]"));
-        percy.screenshot("Wikipedia Home — ignore via xpath", opts);
+        opts.put("ignore_region_xpaths", Arrays.asList(HEADER_XPATH));
+        percy.screenshot("Wikipedia Article — ignore via xpath", opts);
+    }
+
+    @Test
+    public void exercisesIgnoreRegionsViaSelector() {
+        Map<String, Object> opts = new HashMap<>();
+        opts.put("ignore_region_selectors", Arrays.asList("h1"));
+        percy.screenshot("Wikipedia Article — ignore via selector", opts);
     }
 
     @Test
@@ -80,22 +89,21 @@ public class AdvancedTest {
         region.put("left", 0); region.put("right", 300);
         Map<String, Object> opts = new HashMap<>();
         opts.put("custom_ignore_regions", Arrays.asList(region));
-        percy.screenshot("Wikipedia Home — custom ignore region", opts);
+        percy.screenshot("Wikipedia Article — custom ignore region", opts);
     }
 
     @Test
     public void exercisesConsiderRegionsViaXpath() {
         Map<String, Object> opts = new HashMap<>();
-        opts.put("consider_regions_xpaths",
-            Arrays.asList("//android.widget.TextView[@text=\"Search Wikipedia\"]"));
-        percy.screenshot("Wikipedia Home — consider via xpath", opts);
+        opts.put("consider_region_xpaths", Arrays.asList(HEADER_XPATH));
+        percy.screenshot("Wikipedia Article — consider via xpath", opts);
     }
 
     @Test
     public void exercisesSyncMode() {
         Map<String, Object> opts = new HashMap<>();
         opts.put("sync", true);
-        percy.screenshot("Wikipedia Home — sync", opts);
+        percy.screenshot("Wikipedia Article — sync", opts);
     }
 
     @Test
@@ -103,6 +111,6 @@ public class AdvancedTest {
         Map<String, Object> opts = new HashMap<>();
         opts.put("test_case", "home-smoke");
         opts.put("labels", "smoke,automate-appium-java");
-        percy.screenshot("Wikipedia Home — test_case + labels", opts);
+        percy.screenshot("Wikipedia Article — test_case + labels", opts);
     }
 }
